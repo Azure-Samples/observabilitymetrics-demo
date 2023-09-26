@@ -68,15 +68,18 @@ namespace Observability.SchedulePipelineFunctionApp
                 var subscriptionNameResponse = kustoClient.ExecuteQuery(subscriptionNameQuery);
 
                 var subscriptionName = "";
+                var tenantDomain = "";
                 if (subscriptionNameResponse.Read())
                 {
                     subscriptionNameResponse.Read();
                     subscriptionName = subscriptionNameResponse.GetString(1);
+                    tenantDomain = resourceClient.GetTenantDomainAsync(config).ToString();
                 }
                 else
                 {
                     subscriptionName = resourceClient.GetSubscriptionName(subscriptionId.ToString()); //TODO: make asynchronous
-                    await adx.IngestSubscriptionNameAsync(subscriptionId.ToString(), subscriptionName);
+                    tenantDomain = resourceClient.GetTenantDomainAsync(config).ToString();
+                    await adx.IngestSubscriptionNameAsync(subscriptionId.ToString(), subscriptionName, tenantDomain);
                 }
 
                 log.LogInformation($"This is the Subscription name: {subscriptionName}");

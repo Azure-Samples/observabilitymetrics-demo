@@ -7,12 +7,18 @@ using Observability.Utils.Data;
 using Microsoft.Azure.Management.ResourceGraph.Models;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.Identity.Client;
+using Azure.Core;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
 
 namespace Observability.Utils
 {
     //TODO: Make methods asynchronous
     public class ResourceGraphHelper
     {
+        private static HttpClient _httpClient = new HttpClient();
+
         ArmClient client;
 
         public ResourceGraphHelper(IConfiguration config)
@@ -40,8 +46,46 @@ namespace Observability.Utils
 
             return result;
         }
+        
+        public async Task<String> GetTenantDomainAsync(IConfiguration config)
+        {
+            var tenant = client.GetTenants().FirstOrDefault();
+            string managementUrl = "https://management.azure.com/tenants?api-version=2022-12-01";
+
+            using HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, managementUrl);
+
+            string userAssignedClientId = config.GetValue<string>("msiclientId");
+            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = userAssignedClientId });
+            var accessToken = credential.GetToken(new TokenRequestContext(new[] { "https://management.azure.com/" }));
+
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Token);
+
+            //httpRequest.Content = new StringContent(jsonResouces, Encoding.UTF8, "application/json");
+
+            using var response = await _httpClient.SendAsync(httpRequest);
+
+            var result = await response.Content.ReadAsStringAsync();
+
+            JToken responseJson = JToken.Parse(result);
+            JArray tenants = (JArray)responseJson["value"];
+
+
+            foreach (JToken tenantid in tenants)
+            {
+                string id = tenantid["tenantId"].ToString();
+                if (id == tenant.ToString())
+                {
+                    string defaultDomain = tenantid["defaultDomain"].ToString();
+                    return defaultDomain;
+                }
+            }
+
+            return "Default Domain Name not found for Tenant ID";
+
+        }
 
         public string GetSubscriptionName(string subscriptionId)
+
         {
             var tenant = client.GetTenants().FirstOrDefault();
             string query = $"resourcecontainers | where id == \"/subscriptions/{subscriptionId}\" | project name";
