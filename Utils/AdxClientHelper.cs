@@ -44,12 +44,12 @@ namespace Observability.Utils
             return kcsb;
         }
 
-        public async Task IngestSubscriptionNameAsync(string subscriptionId, string subscriptionName)
+        public async Task IngestSubscriptionNameAsync(string subscriptionId, string subscriptionName, string tenantDomain)
         {
             var kcsb = GetClient();
             var kustoClient = KustoClientFactory.CreateCslAdminProvider(kcsb); //TODO: Why created in every method, could be in class constructor?
 
-            var ingestQuery = $".ingest inline into table Subscription_Names <| {subscriptionId}, {subscriptionName}";
+            var ingestQuery = $".ingest inline into table Subscription_Names <| {subscriptionId}, {subscriptionName}, {tenantDomain}";
             await kustoClient.ExecuteControlCommandAsync(databaseName, ingestQuery);
         }
 
