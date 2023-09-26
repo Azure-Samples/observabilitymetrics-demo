@@ -49,7 +49,7 @@ namespace Observability.Utils
         
         public async Task<String> GetTenantDomainAsync(IConfiguration config)
         {
-            var tenant = client.GetTenants().FirstOrDefault();
+            var tenant = client.GetTenants().FirstOrDefault().Id;
             string managementUrl = "https://management.azure.com/tenants?api-version=2022-12-01";
 
             using HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, managementUrl);

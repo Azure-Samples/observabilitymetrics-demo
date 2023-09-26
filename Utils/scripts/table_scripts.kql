@@ -43,7 +43,7 @@
 //create adx tables
 .create-merge table Resource_Providers (name: string, ['type']: string, resultTableName: string)
 
-.create-merge table Subscription_Names (subscriptionId: guid, name: string)
+.create-merge table Subscription_Names (subscriptionId: guid, name: string, tenantDomain: string)
 
 .create-merge table Subscriptions (solution: string, tenancy: string, component: string, subscriptionId: guid, createdAt: datetime)
 
