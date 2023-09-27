@@ -73,12 +73,12 @@ namespace Observability.SchedulePipelineFunctionApp
                 {
                     subscriptionNameResponse.Read();
                     subscriptionName = subscriptionNameResponse.GetString(1);
-                    tenantDomain = resourceClient.GetTenantDomainAsync(config).ToString();
+                    tenantDomain = resourceClient.GetTenantDomainAsync(config).Result;
                 }
                 else
                 {
                     subscriptionName = resourceClient.GetSubscriptionName(subscriptionId.ToString()); //TODO: make asynchronous
-                    tenantDomain = resourceClient.GetTenantDomainAsync(config).ToString();
+                    tenantDomain = resourceClient.GetTenantDomainAsync(config).Result;
                     await adx.IngestSubscriptionNameAsync(subscriptionId.ToString(), subscriptionName, tenantDomain);
                 }
 
