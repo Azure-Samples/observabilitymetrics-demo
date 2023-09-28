@@ -66,24 +66,54 @@ namespace Observability.Utils
             using var response = await _httpClient.SendAsync(httpRequest);
 
             var result = await response.Content.ReadAsStringAsync();
+            /*
+                        JToken responseJson = JToken.Parse(result);
+                        JArray value = (JArray)responseJson["value"];
 
-            JToken responseJson = JToken.Parse(result);
-            JArray value = (JArray)responseJson["value"];
 
+                        *//*foreach (JToken tenantid in value)
+                        {
+                            string id = tenantid["tenantId"].ToString();
+                            if (id == tenant.ToString())
+                            {
+                                string defaultDomain = tenantid["defaultDomain"].ToString();
+                                return defaultDomain;
+                            }
+                        }
 
-            /*foreach (JToken tenantid in value)
+                        return "Default Domain Name not found for Tenant ID";*/
+
+            string defaultDomain = "Null Value";
+            string nullField = "";
+            try
             {
-                string id = tenantid["tenantId"].ToString();
-                if (id == tenant.ToString())
+                JToken responseJson = JToken.Parse(result);
+                JArray value = (JArray)responseJson["value"];
+                if (value != null && value.Count > 0 && value[0]["defaultDomain"] != null)
                 {
-                    string defaultDomain = tenantid["defaultDomain"].ToString();
-                    return defaultDomain;
+                    defaultDomain = value[0]["defaultDomain"].ToString();
+                }
+                else
+                {
+                    if (value == null)
+                    {
+                        nullField = "value";
+                    }
+                    else if (value.Count == 0)
+                    {
+                        nullField = "value[0]";
+                    }
+                    else if (value[0]["defaultDomain"] == null)
+                    {
+                        nullField = "value[0][\"defaultDomain\"]";
+                    }
+                    return $"The field {nullField} was null.";
                 }
             }
-
-            return "Default Domain Name not found for Tenant ID";*/
-
-            string defaultDomain = value[0]["defaultDomain"].ToString();
+            catch (Exception e)
+            {
+                return e.Message;
+            }
             return defaultDomain;
 
         }
