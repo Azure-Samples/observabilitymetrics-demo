@@ -11,6 +11,7 @@ using Microsoft.Identity.Client;
 using Azure.Core;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Models;
 
 namespace Observability.Utils
 {
@@ -49,7 +50,7 @@ namespace Observability.Utils
         
         public async Task<String> GetTenantDomainAsync(IConfiguration config)
         {
-            var tenant = client.GetTenants().FirstOrDefault().Id;
+            //var tenant = client.GetTenants().FirstOrDefault().Id;
             string managementUrl = "https://management.azure.com/tenants?api-version=2022-12-01";
 
             using HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, managementUrl);
@@ -67,10 +68,10 @@ namespace Observability.Utils
             var result = await response.Content.ReadAsStringAsync();
 
             JToken responseJson = JToken.Parse(result);
-            JArray tenants = (JArray)responseJson["value"];
+            JArray value = (JArray)responseJson["value"];
 
 
-            foreach (JToken tenantid in tenants)
+            /*foreach (JToken tenantid in value)
             {
                 string id = tenantid["tenantId"].ToString();
                 if (id == tenant.ToString())
@@ -80,7 +81,10 @@ namespace Observability.Utils
                 }
             }
 
-            return "Default Domain Name not found for Tenant ID";
+            return "Default Domain Name not found for Tenant ID";*/
+
+            string defaultDomain = value[0]["defaultDomain"].ToString();
+            return defaultDomain;
 
         }
 
