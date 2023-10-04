@@ -40,7 +40,7 @@ namespace Observability.Utils
 
             return result;
         }
-
+        
         public string GetSubscriptionName(string subscriptionId)
         {
             var tenant = client.GetTenants().FirstOrDefault();
