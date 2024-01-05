@@ -384,8 +384,8 @@ let totalPush = Container_Registry_Availability_Raw
 .alter-merge table LogAnalytics_Availability_Raw policy retention softdelete = 0s
 
 //Adding default (100 years) retention policy to Subscriptions and Resource Providers tables
-.alter-merge table Subscriptions policy retention "{}"
+.alter table Subscriptions policy retention "{}"
 
-.alter-merge table Resource_Providers policy retention "{}"
+.alter table Resource_Providers policy retention "{}"
 
-.alter-merge table Subscription_Names policy retention "{}"
+.alter table Subscription_Names policy retention "{}"
