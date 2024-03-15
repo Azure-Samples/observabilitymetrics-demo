@@ -1,4 +1,4 @@
-#**This repo has been migrated to https://github.com/microsoft/mcsa-observability and is set to retire on April 15th,2024**#
+# **This repo has been migrated to https://github.com/microsoft/mcsa-observability and is set to retire on April 15th,2024** #
 
 # Solution Approach to Observability
 
